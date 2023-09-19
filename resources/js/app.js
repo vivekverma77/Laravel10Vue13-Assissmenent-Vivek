@@ -1,13 +1,13 @@
 import './bootstrap';
 import '../sass/app.scss'
-import Router from '@/router'
-import store from '@/store'
-import { createPinia } from 'pinia';
+//import store from '@/stores'
+import { createPinia } from "pinia";
+import route from "./router";
+import App from "./App.vue";
+import { createApp } from "vue";
 
-import { createApp } from 'vue/dist/vue.esm-bundler';
-
-const app = createApp({})
-app.use(Router)
-app.use(store)
+const app = createApp(App);
+//app.use(store)
 app.use(createPinia()); 
-app.mount('#app')
+app.use(route);
+app.mount("#app");

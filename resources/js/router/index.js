@@ -1,86 +1,26 @@
-import { createWebHistory, createRouter } from 'vue-router'
-import store from '@/store'
-
-/* Guest Component */
-const Login = () => import('@/components/Login.vue')
-const Register = () => import('@/components/Register.vue')
-/* Guest Component */
-
-/* Layouts */
-import DahboardLayout from "../components/layouts/Default.vue"
-
-/* Layouts */
-
-/* Authenticated Component */
-const Dashboard = () => import('@/components/Dashboard.vue')
-/* Authenticated Component */
-
-
-const routes = [
-    {
-        name: "login",
-        path: "/login",
-        component: Login,
-        meta: {
-            middleware: "guest",
-            title: `Login`
-        }
-    },
-    {
-        name: "register",
-        path: "/register",
-        component: Register,
-        meta: {
-            middleware: "guest",
-            title: `Register`
-        }
-    },
-    {
-        name: "dashboard",
-        path: "/dashboard",
-        component: Dashboard,
-        meta: {
-          //  middleware: "auth",
-        }
-    },
-    {
-        path: "/",
-        component: DahboardLayout,
-        meta: {
-            middleware: "auth"
-        },
-        children: [
-            {
-                name: "dashboard",
-                path: '/',
-                component: Dashboard,
-                meta: {
-                    title: `Dashboard`
-                }
-            }
-        ]
-    }
-]
+import { createRouter, createWebHistory } from "vue-router";
+import routes from "./routes";
+import { useAuthStore } from "../stores/auth";
 
 const router = createRouter({
-    history: createWebHistory(),
-    routes, // short for `routes: routes`
-})
+  routes,
+  history: createWebHistory(),
+  // linkActiveClass: "active",
+});
 
-router.beforeEach((to, from, next) => {
-    document.title = to.meta.title
-    if (to.meta.middleware == "guest") {
-        if (store.state.auth.authenticated) {
-            next({ name: "dashboard" })
-        }
-        next()
-    } else {
-        if (store.state.auth.authenticated) {
-            next()
-        } else {
-            next({ name: "login" })
-        }
-    }
-})
+router.beforeEach(async (to, from) => {
+  const store = useAuthStore();
+  await store.fetchUser();
+  if (to.meta.auth && !store.isLoggedIn) {
+    return {
+      name: "login",
+      query: {
+        redirect: to.fullPath,
+      },
+    };
+  } else if (to.meta.guest && store.isLoggedIn) {
+    return { name: "tasks" };
+  }
+});
 
-export default router
+export default router;

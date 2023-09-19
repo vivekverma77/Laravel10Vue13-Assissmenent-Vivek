@@ -6,25 +6,28 @@
                     <div class="card-body">
                         <h1 class="text-center">Register</h1>
                         <hr/>
-                        <form action="javascript:void(0)" @submit="register" class="row" method="post">
-                            <div class="col-12" v-if="Object.keys(validationErrors).length > 0">
-                                <div class="alert alert-danger">
-                                    <ul class="mb-0">
-                                        <li v-for="(value, key) in validationErrors" :key="key">{{ value[0] }}</li>
-                                    </ul>
+                        <form action="javascript:void(0)" @submit="handleSubmit" class="row" method="post">
+                    
+                            <div class="form-group col-12">
+                                <label for="name" class="font-weight-bold" :class="{ 'is-invalid': errors.name && errors.name[0] }">Name</label>
+                                <input type="text" name="name" v-model="user.name" id="name" placeholder="Enter name" class="form-control">
+                                <div class="invalid-feedback" v-if="errors.name && errors.name[0]">
+                                    {{ errors.name && errors.name[0] }}
+                                </div>
+                            </div>
+                            <div class="form-group col-12 my-2">
+                                <label for="email" class="font-weight-bold"  :class="{ 'is-invalid': errors.email && errors.email[0] }">Email</label>
+                                <input type="text" name="email" v-model="user.email" id="email" placeholder="Enter Email" class="form-control">
+                                <div class="invalid-feedback" v-if="errors.email && errors.email[0]">
+                                    {{ errors.email && errors.email[0] }}
                                 </div>
                             </div>
                             <div class="form-group col-12">
-                                <label for="name" class="font-weight-bold">Name</label>
-                                <input type="text" name="name" v-model="user.name" id="name" placeholder="Enter name" class="form-control">
-                            </div>
-                            <div class="form-group col-12 my-2">
-                                <label for="email" class="font-weight-bold">Email</label>
-                                <input type="text" name="email" v-model="user.email" id="email" placeholder="Enter Email" class="form-control">
-                            </div>
-                            <div class="form-group col-12">
-                                <label for="password" class="font-weight-bold">Password</label>
+                                <label for="password" class="font-weight-bold" :class="{ 'is-invalid': errors.password && errors.password[0] }">Password</label>
                                 <input type="password" name="password" v-model="user.password" id="password" placeholder="Enter Password" class="form-control">
+                                <div class="invalid-feedback" v-if="errors.password && errors.password[0]">
+                                    {{ errors.password && errors.password[0] }}
+                                </div>
                             </div>
                             <div class="form-group col-12 my-2">
                                 <label for="password_confirmation" class="font-weight-bold">Confirm Password</label>
@@ -45,44 +48,28 @@
         </div>
     </div>
 </template>
+<script setup>
+import { reactive } from "vue";
+import { storeToRefs } from "pinia";
+import { useRouter } from "vue-router";
+import { useAuthStore } from "../stores/auth";
 
-<script>
-import { mapActions } from 'vuex'
-export default {
-    name:'register',
-    data(){
-        return {
-            user:{
-                name:"",
-                email:"",
-                password:"",
-                password_confirmation:""
-            },
-            validationErrors:{},
-            processing:false
-        }
-    },
-    methods:{
-        ...mapActions({
-            signIn:'auth/login'
-        }),
-        async register(){
-            this.processing = true
-            await axios.get('/sanctum/csrf-cookie')
-            await axios.post('/register',this.user).then(response=>{
-                this.validationErrors = {}
-                this.signIn()
-            }).catch(({response})=>{
-                if(response.status===422){
-                    this.validationErrors = response.data.errors
-                }else{
-                    this.validationErrors = {}
-                    alert(response.data.message)
-                }
-            }).finally(()=>{
-                this.processing = false
-            })
-        }
+const router = useRouter()
+const store = useAuthStore()
+const { isLoggedIn, errors } = storeToRefs(store)
+const { handleRegister } = store
+
+const user = reactive({
+    name: '',
+    email: '',
+    password: '',
+    password_confirmation: ''
+})
+
+const handleSubmit = async () => {
+    await handleRegister(user)
+    if (isLoggedIn.value) {
+        router.push({ name: 'tasks' })
     }
 }
 </script>

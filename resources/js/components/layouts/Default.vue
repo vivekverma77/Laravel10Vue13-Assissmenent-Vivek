@@ -16,7 +16,7 @@
                         <ul class="navbar-nav">
                             <li class="nav-item dropdown">
                                 <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                    {{ user.name }}
+                                    {{ user  }}
                                 </a>
                                 <div class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdownMenuLink">
                                     <a class="dropdown-item" href="javascript:void(0)" @click="logout">Logout</a>
@@ -33,25 +33,25 @@
     </div>
 </template>
 
-<script>
-import {mapActions} from 'vuex'
-export default {
-    name:"default-layout",
-    data(){
-        return {
-            user:this.$store.state.auth.user
-        }
-    },
-    methods:{
-        ...mapActions({
-            signOut:"auth/logout"
-        }),
-        async logout(){
-            await axios.post('/logout').then(({data})=>{
-                this.signOut()
-                this.$router.push({name:"login"})
-            })
-        }
-    }
+<script setup>
+import { ref, computed } from "vue";
+import { useRouter } from "vue-router";
+import { useAuthStore } from "../../stores/auth";
+
+const router = useRouter()
+const store = useAuthStore()
+const isOpen = ref(false)
+
+const logout = async () => {
+    await store.handleLogout()
+    isOpen.value = false
+    router.push({ name: 'login' })
 }
+
+const toggle = () => isOpen.value = !isOpen.value
+
+const toggleClass = computed(() => isOpen.value === true ? 'show' : '')
+
+const user = computed(() => store.user.name);
+
 </script>

@@ -16,6 +16,9 @@
         "vue": "^3.2.36"
     },
     "dependencies": {
+        "datatables.net-bs5": "^1.13.6",
+        "datatables.net-select": "^1.7.0",
+        "datatables.net-vue3": "^2.1.3",
         "pinia": "^2.1.6",
         "vue-loader": "^17.2.2",
         "vue-router": "^4.2.4",
