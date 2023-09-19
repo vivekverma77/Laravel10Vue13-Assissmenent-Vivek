@@ -29,12 +29,12 @@
                                     </div>
                                     <div class="mb-3">
                                         <label for="task-priority" class="col-form-label">Priority:</label>
-                                        <select class="form-control" v-model="formData.priority">
+                                        <select class="form-control" v-model="formData.priority" :class="{'is-invalid' : errors.priority && errors.priority[0]}">
                                             <option value="high">High priority</option>
                                             <option value="low">Low priority</option>
                                             <option value="middle">Middle priority</option>
                                         </select>
-                                     
+                                        <label class="invalid-feedback" v-if="errors.priority && errors.priority[0]">{{ errors.priority && errors.priority[0] }}</label>
                                     </div>
                                     <div class="mb-3">
                                       <label for="task-status" class="col-form-label">Status:</label>
@@ -183,7 +183,8 @@ const addNewTask = async() => {
       formData.value.name = '';   
       formData.value.priority = '';  
       formData.value.status = '';  
-
+      const { data } = await allTasks()
+      tasks.value = data.data
   }catch(error){
     if (error.response && error.response.status === 422) {
         errors.value = error.response.data.errors;
@@ -205,7 +206,9 @@ const updateTaskData = async() => {
       loader.value = false;
       formData.value.name = '';   
       formData.value.priority = '';
-      loader.value = false;   
+      loader.value = false;
+      const { data } = await allTasks()
+      tasks.value = data.data   
 
   }catch(error){
     if (error.response && error.response.status === 422) {
@@ -218,6 +221,7 @@ const updateTaskData = async() => {
 
 // Edit the task
 const taskEdit =  async(id) => {
+    errors.value = '';
     isEdit.value = true;
     modalPopup.value = true;
     const { data } = await editTask(id)
