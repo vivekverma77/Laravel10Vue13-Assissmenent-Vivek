@@ -11,15 +11,15 @@
                     </div>
                     <div class="card-body">
                         <!-- Add Task Button -->
-                        <button class="btn btn-secondary mb-3"  @click="OpenModal()">Add Task</button>
-                        <div v-if="modalPopup" id="taskModal" class="modal fade show" tabindex="-1"  style="display:block" aria-modal="true">
+                        <button class="btn btn-secondary mb-3"  @click="openTaskModal()">Add Task</button>
+                        <div v-if="taskPopup" id="taskModal" class="modal fade show" tabindex="-1"  style="display:block" aria-modal="true">
                             <div class="modal-dialog">
                               <div class="modal-content">
                                 <form @submit.prevent="isEdit ? updateTaskData() : addNewTask()">
                                 <div class="modal-header">
                                   <h5 class="modal-title" v-if="isEdit">Edit Task</h5>
                                   <h5 class="modal-title" v-else>Add New Task</h5>
-                                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" @click="CloseModal"></button>
+                                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" @click="closeTaskModal"></button>
                                 </div>
                                 <div class="modal-body">
                                     <div class="mb-3">
@@ -47,7 +47,7 @@
                                   </div>
                                 </div>
                                 <div class="modal-footer">
-                                  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" @click="CloseModal">Close</button>
+                                  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" @click="closeTaskModal">Close</button>
                                   <button type="submit" class="btn btn-primary" :disabled="loader">Save changes</button>
                                 </div>
                                </form>
@@ -73,7 +73,7 @@
                             @input="filterTasksBySearch"
                             style="width:250px"/>
                         </div>
-                        <table id="example2" class="table table-bordered table-hover">
+                        <table id="task_table" class="table table-bordered table-hover">
                             <thead>
                             <tr>
                               <th>ID</th>
@@ -93,7 +93,7 @@
                                       <span v-if="task.priority == 'middle'" class="badge bg-warning">Middle priority</span>
                                     </td>
                                     <td>{{ task.status }}</td>
-                                    <td><button class="btn btn-primary btn-sm" @click="taskEdit(task.id)">Edit</button>&nbsp;&nbsp;<button class="btn btn-danger btn-sm" @click="taskDelete(task.id)">Delete</button></td>
+                                    <td><button class="btn btn-primary btn-sm" @click="taskEdit(task.id)">Edit</button>&nbsp;&nbsp;<button class="btn btn-danger btn-sm" @click="showDeleteModal(task.id)">Delete</button></td>
                                 </tr>
                              </tbody>   
                           </table>
@@ -110,24 +110,10 @@
                                 </li>
                             </ul>
                         </div>
-                        
-                          <div v-if="deletePopup" id="deleteTaskModal" class="modal fade show" tabindex="-1"  style="display:block" aria-modal="true">        
-                            <div class="modal-dialog">
-                              <div class="modal-content">
-                                <div class="modal-header">
-                                  <h5 class="modal-title">Delete Task</h5>
-                                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" @click="hideDeleteModal"></button>
-                                </div>
-                                <div class="modal-body">
-                                  <p>Are you sure want to delete this task ?</p>
-                                </div>
-                                <div class="modal-footer">
-                                  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" @click="hideDeleteModal">No</button>
-                                  <button type="button" class="btn btn-primary" @click="confirmDelete">Yes</button>
-                                </div>
-                              </div>
-                            </div>
-                          </div>
+                      
+                           <!-- Delete Modal Component -->
+                          <DeleteModal :deletePopup="deletePopup" @hide-delete-modal="hideDeleteModal" @confirm-delete="confirmDelete" />
+
                         </div>
                 </div>
             </div>
@@ -147,7 +133,7 @@ const { fetchAllTasks } = store
 const { handleUpdatedTask } = store
 const tasks = ref([])
 
-const modalPopup= ref(false)
+const taskPopup= ref(false)
 const errors = ref({});
 const successMessage = ref('');
 const loader = ref(false)
@@ -158,11 +144,12 @@ const taskId = ref('');
 const deletePopup = ref(false);
 const deleteTaskId = ref('')
 
+
 // Get all tasks
 onMounted(async () => {
-    const { data } = await allTasks()
- //  await fetchAllTasks()
-    tasks.value = data.data
+  //  const { data } = await allTasks()
+    await fetchAllTasks()
+    tasks.value = store.tasks
 })
 
 
@@ -172,15 +159,15 @@ const formData = ref({
     status:''
 })
 
-const OpenModal = () => {
-    modalPopup.value = true;
+const openTaskModal = () => {
+    taskPopup.value = true;
     formData.value.name = '';   
     formData.value.priority = 'high';  
     formData.value.status = 'Pending';
 }
 
-const CloseModal = () => {
-    modalPopup.value = false;
+const closeTaskModal = () => {
+   taskPopup.value = false;
 }
 
 // Add new task
@@ -190,7 +177,7 @@ const addNewTask = async() => {
   {
       loader.value = true;  
       await handleAddedTask(formData.value)
-      modalPopup.value = false;
+      taskPopup.value = false;
       successMessage.value =  'Task added successfully';
       loader.value = false;
       formData.value.name = '';   
@@ -214,7 +201,7 @@ const updateTaskData = async() => {
   {
       loader.value = true;  
       await handleUpdatedTask(formData.value)
-      modalPopup.value = false;
+      taskPopup.value = false;
       successMessage.value =  'Task updated successfully';
       loader.value = false;
       formData.value.name = '';   
@@ -236,13 +223,13 @@ const updateTaskData = async() => {
 const taskEdit =  async(id) => {
     errors.value = '';
     isEdit.value = true;
-    modalPopup.value = true;
+    taskPopup.value = true;
     const { data } = await editTask(id)
     formData.value = data.data
 }
 
-// Delete the task
-const taskDelete = (id) => {
+// Function to Delete the task
+const showDeleteModal = (id) => {
     deletePopup.value = true;
     deleteTaskId.value = id;
 }
@@ -251,7 +238,6 @@ const taskDelete = (id) => {
 const hideDeleteModal = () => {
     deletePopup.value = false;
     deleteTaskId.value = '';
-    
   };
 
 const confirmDelete = async() => {
