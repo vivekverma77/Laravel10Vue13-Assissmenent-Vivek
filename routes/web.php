@@ -24,7 +24,6 @@ Route::prefix('auth')->group(function () {
 
 
 
-Route::get('/', function () {
+Route::get('/{any}', function () {
     return view('app');
-})
-->name('application');
+})->where('any', '.*');
