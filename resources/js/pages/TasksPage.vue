@@ -40,7 +40,7 @@
                                       <label for="task-status" class="col-form-label">Status:</label>
                                       <select class="form-control" v-model="formData.status">
                                           <option value="Pending">Pending</option>
-                                          <option value="In Progress">In-Progress</option>
+                                          <option value="In-Progress">In-Progress</option>
                                           <option value="Completed">Completed</option>
                                       </select>
                       
@@ -56,14 +56,14 @@
                           </div>
                         
                            <!-- ... Your existing template ... -->
-                        <div class="btn-group ml-5">
+                        <div class="btn-group ml-5 d-flex">
                             <button class="btn btn-primary" @click="filterTasks('All')" :class="selectedStatus === 'All' ? 'active' : ''">All</button>
                             <button class="btn btn-primary" @click="filterTasks('Pending')" :class="selectedStatus === 'Pending' ? 'active' : ''">Pending</button>
                             <button class="btn btn-primary" @click="filterTasks('In-Progress')" :class="selectedStatus === 'In-Progress' ? 'active' : ''">In Progress</button>
                             <button class="btn btn-primary" @click="filterTasks('Completed')" :class="selectedStatus === 'Completed' ? 'active' : ''">Completed</button>
                         </div>
                         <!-- Search input field -->
-                        <div class="mb-3">
+                        <div class="mb-3 mt-3">
                           <label for="search" class="form-label">Search:</label>
                           <input
                             type="text"
@@ -71,7 +71,7 @@
                             id="search"
                             v-model="searchQuery"
                             @input="filterTasksBySearch"
-                           width=""/>
+                            style="width:250px"/>
                         </div>
                         <table id="example2" class="table table-bordered table-hover">
                             <thead>
@@ -84,7 +84,7 @@
                             </tr>
                             </thead>
                              <tbody>
-                                <tr v-for="task in tasks" :key="task.id">
+                                <tr v-for="task in filteredTasks" :key="task.id">
                                     <td>{{ task.id }}</td>
                                     <td>{{ task.name }}</td>
                                     <td>
@@ -97,7 +97,20 @@
                                 </tr>
                              </tbody>   
                           </table>
-                         
+                          <div class="pagination mt-3 d-block">
+                            <ul class="pagination justify-content-center">
+                                <li class="page-item" :class="{ disabled: currentPage === 1 }">
+                                    <a class="page-link" href="#" @click.prevent="prevPage">Previous</a>
+                                </li>
+                                <li class="page-item" v-for="page in totalPages" :key="page" :class="{ active: currentPage === page }">
+                                    <a class="page-link" href="#" @click.prevent="gotoPage(page)">{{ page }}</a>
+                                </li>
+                                <li class="page-item" :class="{ disabled: currentPage === totalPages }">
+                                    <a class="page-link" href="#" @click.prevent="nextPage">Next</a>
+                                </li>
+                            </ul>
+                        </div>
+                        
                           <div v-if="deletePopup" id="deleteTaskModal" class="modal fade show" tabindex="-1"  style="display:block" aria-modal="true">        
                             <div class="modal-dialog">
                               <div class="modal-content">
@@ -162,8 +175,8 @@ const formData = ref({
 const OpenModal = () => {
     modalPopup.value = true;
     formData.value.name = '';   
-    formData.value.priority = '';  
-    formData.value.status = '';  
+    formData.value.priority = 'high';  
+    formData.value.status = 'Pending';
 }
 
 const CloseModal = () => {
@@ -275,5 +288,33 @@ const filterTasksBySearch = async() => {
       const { data } = await tasksBySearch({search:query})
       tasks.value = data.data
     }
+};
+
+// Pagingnation
+const itemsPerPage = ref(5); // Number of items to display per page
+const currentPage = ref(1); // Current page number
+
+const filteredTasks = computed(() => {
+    const startIndex = (currentPage.value - 1) * itemsPerPage.value;
+    const endIndex = startIndex + itemsPerPage.value;
+    return tasks.value.slice(startIndex, endIndex);
+});
+
+const totalPages = computed(() => Math.ceil(tasks.value.length / itemsPerPage.value));
+
+const prevPage = () => {
+    if (currentPage.value > 1) {
+        currentPage.value--;
+    }
+};
+
+const nextPage = () => {
+    if (currentPage.value < totalPages.value) {
+        currentPage.value++;
+    }
+};
+
+const gotoPage = (page) => {
+    currentPage.value = page;
 };
 </script>

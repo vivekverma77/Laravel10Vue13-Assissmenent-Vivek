@@ -1,5 +1,5 @@
 import './bootstrap';
-import '../sass/app.scss'
+//import '../sass/app.scss'
 //import store from '@/stores'
 import { createPinia } from "pinia";
 import route from "./router";
