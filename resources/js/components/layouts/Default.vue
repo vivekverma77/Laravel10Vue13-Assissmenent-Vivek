@@ -9,7 +9,13 @@
                 <div class="collapse navbar-collapse" id="navbarNavDropdown">
                     <ul class="navbar-nav me-auto">
                         <li class="nav-item">
-                            <router-link :to="{name:'dashboard'}" class="nav-link">Home <span class="sr-only">(current)</span></router-link>
+                            <router-link :to="{name:'dashboard'}" class="nav-link">Home <span class="sr-only"></span></router-link>
+                        </li>
+                        <li class="nav-item">
+                            <router-link :to="{name:'tasks'}" class="nav-link">Tasks</router-link>
+                        </li>
+                        <li class="nav-item">
+                            <router-link :to="{name:'info'}" class="nav-link">Info</router-link>
                         </li>
                     </ul>
                     <div class="d-flex">

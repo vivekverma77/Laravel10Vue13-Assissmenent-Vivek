@@ -1,4 +1,5 @@
 import TasksPage from "../pages/TasksPage.vue";
+import InfoPage from "../pages/InfoPage.vue";
 import LoginPage from "../pages/LoginPage.vue";
 import RegisterPage from "../pages/RegisterPage.vue";
 import Dashboard from "../components/Dashboard.vue";
@@ -23,9 +24,8 @@ const routes = [
    ]
   },
   {
-    path: "/tasks",
+    path: "/",
     component: DahboardLayout,
-    name: "tasks",
     meta: {
       auth: true,
     },
@@ -40,7 +40,23 @@ const routes = [
       }
    ]
   },
- 
+  {
+    path: "/",
+    component: DahboardLayout,
+    meta: {
+      auth: true,
+    },
+    children: [
+      {
+          name: "info",
+          path: '/info',
+          component: InfoPage,
+          meta: {
+              title: 'Info'
+          }
+      }
+   ]
+  },
   {
     path: "/login",
     component: LoginPage,
