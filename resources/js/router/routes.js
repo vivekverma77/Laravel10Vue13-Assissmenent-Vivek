@@ -2,6 +2,7 @@ import TasksPage from "../pages/TasksPage.vue";
 import InfoPage from "../pages/InfoPage.vue";
 import LoginPage from "../pages/LoginPage.vue";
 import RegisterPage from "../pages/RegisterPage.vue";
+import ForgotPassword from "../pages/ForgotPasswordPage.vue";
 import Dashboard from "../components/Dashboard.vue";
 import DahboardLayout  from "../components/layouts/Default.vue";
 
@@ -69,6 +70,14 @@ const routes = [
     path: "/register",
     component: RegisterPage,
     name: "register",
+    meta: {
+      guest: true,
+    },
+  },
+  {
+    path: "/forgot-password",
+    component: ForgotPassword,
+    name: "forgot_password",
     meta: {
       guest: true,
     },

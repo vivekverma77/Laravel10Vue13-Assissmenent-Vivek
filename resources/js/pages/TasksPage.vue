@@ -12,6 +12,9 @@
                     <div class="card-body">
                         <!-- Add Task Button -->
                         <button class="btn btn-secondary mb-3"  @click="openTaskModal()">Add Task</button>
+
+                        <!-- Include the TaskModal component -->
+                        <!-- <TaskModal :task-popup="taskPopup" :is-edit="isEdit" @close-task-modal="closeTaskModal" /> -->
                         <div v-if="taskPopup" id="taskModal" class="modal fade show" tabindex="-1"  style="display:block" aria-modal="true">
                             <div class="modal-dialog">
                               <div class="modal-content">
@@ -126,6 +129,7 @@ import { computed, onMounted, ref } from "vue";
 import { storeToRefs } from "pinia";
 import { allTasks, editTask, removeTask, updateTask, tasksByStatus, tasksBySearch } from '../http/task-api.js';
 import DeleteModal  from "../components/modals/DeleteModal.vue"
+import TaskModal  from "../components/modals/TaskModal.vue"
 import { useTaskStore } from "../stores/task";
 const store = useTaskStore()
 const { handleAddedTask } = store

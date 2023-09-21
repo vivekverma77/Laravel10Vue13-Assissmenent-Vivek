@@ -8,4 +8,6 @@ export const register = (user) => api.post("/auth/register", user);
 
 export const logout = () => api.post("/auth/logout");
 
+export const forgotPassword = (user) => api.post("/auth/forget-password",user);
+
 export const getUser = () => api.get("/api/user");

@@ -4,8 +4,9 @@
             <div class="col-12 col-md-6 offset-md-3">
                 <div class="card shadow sm">
                     <div class="card-body">
-                        <h1 class="text-center">Login</h1>
+                        <h1 class="text-center">Forgot Password</h1>
                         <hr/>
+                        <div v-show="success" class="alert alert-success">We have e-mailed your password reset link!</div>
                         <form action="javascript:void(0)" class="row" method="post" @submit.prevent="handleSubmit">
                     
                             <div class="form-group col-12">
@@ -14,21 +15,16 @@
                                 <div class="invalid-feedback" v-if="errors.email && errors.email[0]">{{errors.email && errors.email[0]}}</div>
 
                             </div>
-                            <div class="form-group col-12 my-2">
-                                <label for="password" class="font-weight-bold">Password</label>
-                                <input type="password" :class="{'is-invalid' : errors.password && errors.password[0] }" v-model="form.password" name="password" id="password" class="form-control">
-                                <div class="invalid-feedback" v-if="errors.password && errors.password[0]">{{errors.password && errors.password[0]}}</div>
-                            </div>
-                            <div class="col-12 mb-2">
+                            <div class="col-12 mb-4 mt-2 text-center">
                                 <button type="submit" :disabled="processing" @click="login" class="btn btn-primary btn-block">
-                                    {{ processing ? "Please wait" : "Login" }}
+                                    {{ processing ? "Please wait" : "Submit" }}
                                 </button>
                             </div>
                             <div class="col-12 text-center">
-                                <label>Don't have an account? <router-link :to="{name:'register'}">Register Now!</router-link></label>
+                                <label><router-link :to="{name:'login'}">Login Now!</router-link></label>
                             </div>
-                            <div class="col-12 text-center mt-4">
-                                <label><router-link :to="{name:'forgot_password'}">Forgot password?</router-link></label>
+                            <div class="col-12 text-center mt-2">
+                                <label><router-link :to="{name:'register'}">Register Now!</router-link></label>
                             </div>
                         </form>
                     </div>
@@ -45,22 +41,20 @@ import { useAuthStore } from "../stores/auth";
 
 const router = useRouter()
 const store = useAuthStore()
-const { isLoggedIn, errors } = storeToRefs(store)
-const { handleLogin } = store
+const { errors } = storeToRefs(store)
+const { handleForgotPassword } = store
 const processing = ref(false)
+const success = ref(false)
 
 const form = reactive({
     email: '',
-    password: '' 
 })
 
 const handleSubmit = async () => {
     processing.value = true;
-    await handleLogin(form)
-    //console.log(isLoggedIn.value);
+    await handleForgotPassword(form)
     processing.value = false;
-    if (isLoggedIn.value) {
-        router.push({ name: 'tasks' })
-    }
+    success = true;
+   
 }
 </script>

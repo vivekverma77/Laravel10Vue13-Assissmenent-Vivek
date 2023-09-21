@@ -49,7 +49,7 @@
     </div>
 </template>
 <script setup>
-import { reactive } from "vue";
+import { reactive,ref } from "vue";
 import { storeToRefs } from "pinia";
 import { useRouter } from "vue-router";
 import { useAuthStore } from "../stores/auth";
@@ -58,6 +58,7 @@ const router = useRouter()
 const store = useAuthStore()
 const { isLoggedIn, errors } = storeToRefs(store)
 const { handleRegister } = store
+const processing = ref(false)
 
 const user = reactive({
     name: '',
@@ -67,7 +68,9 @@ const user = reactive({
 })
 
 const handleSubmit = async () => {
+    processing.value = true;
     await handleRegister(user)
+    processing.value = false;
     if (isLoggedIn.value) {
         router.push({ name: 'tasks' })
     }
