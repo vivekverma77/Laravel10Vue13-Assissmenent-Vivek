@@ -24,7 +24,8 @@ class UpdateTaskRequest extends FormRequest
         return [
             'name' => 'required|string|max:255',
             'priority' => 'string',
-            'status' => 'string',
+            'status' => 'nullable',
+            'assigned_user_id' => 'nullable',
         ];
     }
 }

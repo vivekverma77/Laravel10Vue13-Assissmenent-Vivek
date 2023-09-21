@@ -18,7 +18,7 @@ class TaskController extends Controller
      */
     public function index()
     {   
-        return TaskResource::collection(Task::all());
+        return TaskResource::collection(Task::with('user')->get());
     }
 
     /**

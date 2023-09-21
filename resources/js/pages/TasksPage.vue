@@ -46,8 +46,13 @@
                                           <option value="In-Progress">In-Progress</option>
                                           <option value="Completed">Completed</option>
                                       </select>
-                      
                                   </div>
+                                  <div class="mb-3">
+                                    <label for="task-user" class="col-form-label">Assigned To:</label>
+                                    <select class="form-control" v-model="formData.assigned_user_id">
+                                       <option v-for="user in users" :key="user.id" :value="user.id">{{user.name}}</option>
+                                    </select>
+                                </div>
                                 </div>
                                 <div class="modal-footer">
                                   <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" @click="closeTaskModal">Close</button>
@@ -79,16 +84,15 @@
                         <table id="task_table" class="table table-bordered table-hover">
                             <thead>
                             <tr>
-                              <th>ID</th>
                               <th>Task </th>
                               <th>Priority</th>
                               <th>Status</th>
+                              <th>Assigned User</th>
                               <th>Actions</th>
                             </tr>
                             </thead>
                              <tbody>
                                 <tr v-for="task in filteredTasks" :key="task.id">
-                                    <td>{{ task.id }}</td>
                                     <td>{{ task.name }}</td>
                                     <td>
                                       <span v-if="task.priority == 'low'" class="badge bg-success">Low priority</span>
@@ -96,6 +100,13 @@
                                       <span v-if="task.priority == 'middle'" class="badge bg-warning">Middle priority</span>
                                     </td>
                                     <td>{{ task.status }}</td>
+                                    <td>
+                                        <span v-if="task.assigned_user_name">
+                                            <img src="https://cdn.pixabay.com/photo/2016/11/18/23/38/child-1837375_1280.png" class="img avatar" style="width:25px">
+                                            {{ task.assigned_user_name }}
+                                        </span>
+                                        <span v-else>-</span>
+                                    </td>
                                     <td><button class="btn btn-primary btn-sm" @click="taskEdit(task.id)">Edit</button>&nbsp;&nbsp;<button class="btn btn-danger btn-sm" @click="showDeleteModal(task.id)">Delete</button></td>
                                 </tr>
                              </tbody>   
@@ -148,19 +159,26 @@ const taskId = ref('');
 const deletePopup = ref(false);
 const deleteTaskId = ref('')
 
+//Get all users
+import { useUserStore } from "../stores/user";
+const userStore = useUserStore();
+const { fetchAllUsers } = userStore
+const users = ref([]);
 
 // Get all tasks
 onMounted(async () => {
-  //  const { data } = await allTasks()
     await fetchAllTasks()
     tasks.value = store.tasks
+    await fetchAllUsers()
+    users.value = userStore.users;
 })
 
 
 const formData = ref({
     name:'',
     priority:'',
-    status:''
+    status:'',
+    assigned_user_id:''
 })
 
 const openTaskModal = () => {

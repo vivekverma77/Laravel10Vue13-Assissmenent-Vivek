@@ -28,9 +28,15 @@ export const useTaskStore = defineStore("taskStore", () => {
   const handleUpdatedTask = async (task) => {
     const { data: updatedTask } = await updateTask(task.id, {
       name: task.name,
+      priority: task.priority,
+      status: task.status,
+      assigned_user_id : task.assigned_user_id ,
     });
     const currentTask = tasks.value.find((item) => item.id === task.id);
     currentTask.name = updatedTask.data.name;
+    currentTask.priority = updatedTask.data.priority;
+    currentTask.status = updatedTask.data.status;
+    currentTask.assigned_user_id = updatedTask.data.assigned_user_id;
   };
 
   const handleCompletedTask = async (task) => {
