@@ -23,6 +23,7 @@
               :users="users"
               :formData="formData"
               :errors="errors"
+              @success-message="showSuccessMessage"
               @close-task-modal="closeTaskModal"
             />
 
@@ -151,6 +152,7 @@ const confirmDelete = async () => {
   await handleRemovedTask(deleteTaskId.value);
   deletePopup.value = false;
   tasks.value = store.tasks;
+  successMessage.value = "Task Deleted Successfully"
 };
 
 // Filter tasks
@@ -208,5 +210,9 @@ const nextPage = () => {
 
 const gotoPage = (page) => {
   currentPage.value = page;
+};
+
+const showSuccessMessage = (message) => {
+  successMessage.value = message;
 };
 </script>

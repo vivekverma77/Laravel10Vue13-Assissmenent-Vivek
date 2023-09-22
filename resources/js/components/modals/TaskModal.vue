@@ -65,11 +65,11 @@ const props = defineProps({
     formData: Object,
     loader: Boolean,
     users: Object,
-    errors:Object
+    errors:Object,
 });
 const { formData } = toRefs(props);
 
-const emit = defineEmits(["close-task-modal"]);
+const emit = defineEmits(["close-task-modal", "success-message"]);
 
 const closeTaskModal = () => {
   errors.value = '';
@@ -83,11 +83,8 @@ const addNewTask = async() => {
       loader.value = true;  
       await handleAddedTask(formData.value)
       emit("close-task-modal");
-      successMessage.value =  'Task added successfully';
+      emit("success-message", "Task added successfully");
       loader.value = false;
-      formData.value.name = '';   
-      formData.value.priority = '';  
-      formData.value.status = '';  
       await fetchAllTasks()
       tasks.value = store.tasks
   }catch(error){
@@ -106,11 +103,7 @@ const updateTaskData = async() => {
       loader.value = true;  
       await handleUpdatedTask(formData.value)
       emit("close-task-modal");
-      successMessage.value =  'Task updated successfully';
-      loader.value = false;
-      formData.value.name = '';   
-      formData.value.priority = '';
-      loader.value = false;
+      emit("success-message", "Task updated successfully");
       const { data } = await allTasks()
       tasks.value = data.data   
 
