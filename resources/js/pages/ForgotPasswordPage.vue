@@ -54,7 +54,8 @@ const handleSubmit = async () => {
     processing.value = true;
     await handleForgotPassword(form)
     processing.value = false;
-    success = true;
+    success.value = true;
+    form.email.value = '';
    
 }
 </script>

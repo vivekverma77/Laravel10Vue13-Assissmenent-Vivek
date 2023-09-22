@@ -11,6 +11,9 @@ import {
 export const useTaskStore = defineStore("taskStore", () => {
   const tasks = ref([]);
 
+  const itemsPerPage = ref(5); // Number of items to display per page
+  const currentPage = ref(1); // Current page number
+
   const uncompletedTasks = computed(() =>
     tasks.value.filter((task) => !task.is_completed)
   );
@@ -47,9 +50,9 @@ export const useTaskStore = defineStore("taskStore", () => {
     currentTask.is_completed = updatedTask.data.is_completed;
   };
 
-  const handleRemovedTask = async (task) => {
-    await removeTask(task.id);
-    const index = tasks.value.findIndex((item) => item.id === task.id);
+  const handleRemovedTask = async (task_id) => {
+    await removeTask(task_id);
+    const index = tasks.value.findIndex((item) => item.id === task_id);
     tasks.value.splice(index, 1);
   };
 

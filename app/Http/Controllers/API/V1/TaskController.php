@@ -9,6 +9,7 @@ use App\Http\Resources\TaskResource;
 use Illuminate\Http\RedirectResponse;
 use App\Http\Requests\StoreTaskRequest;
 use App\Http\Requests\UpdateTaskRequest;
+use GuzzleHttp\Psr7\Request;
 
 class TaskController extends Controller
 {
@@ -16,8 +17,8 @@ class TaskController extends Controller
      * Display a listing of the resource.
      */
     public function index()
-    {
-        return TaskResource::collection(Task::all());
+    {   
+        return TaskResource::collection(Task::with('user')->orderby('id','desc')->get());
     }
 
     /**
@@ -25,7 +26,7 @@ class TaskController extends Controller
      */
     public function store(StoreTaskRequest $request)
     {
-        $task = Task::create($request->validated());
+        $task = $request->user()->tasks()->create($request->validated());
 
         return TaskResource::make($task);
     }
@@ -34,7 +35,7 @@ class TaskController extends Controller
      * Display the specified resource.
      */
     public function show(Task $task)
-    {
+    {   
         return TaskResource::make($task);
     }
 
@@ -56,5 +57,17 @@ class TaskController extends Controller
         $task->delete();
 
         return response()->noContent();
+    }
+
+    public function tasksByStatus($status)
+    {   
+        return TaskResource::collection(Task::where('status', $status)->get());
+    }
+
+    public function tasksBySearch()
+    {  
+        $json = file_get_contents('php://input');
+        $search = json_decode($json);   
+        return TaskResource::collection(Task::where('name', 'LIKE',"%$search->search%")->get());
     }
 }

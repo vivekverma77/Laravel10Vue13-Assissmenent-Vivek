@@ -30,7 +30,12 @@
                         <option value="In-Progress">In-Progress</option>
                         <option value="Completed">Completed</option>
                     </select>
-
+                </div>
+                <div class="mb-3">
+                    <label for="task-user" class="col-form-label">Assigned To:</label>
+                    <select class="form-control" v-model="formData.assigned_user_id">
+                       <option v-for="user in users" :key="user.id" :value="user.id">{{user.name}}</option>
+                    </select>
                 </div>
             </div>
             <div class="modal-footer">
@@ -44,30 +49,80 @@
 </template>
   
 <script setup>
-import { ref, defineProps, defineEmits } from "vue";
+import { ref, defineProps, defineEmits,toRefs  } from "vue";
 import { storeToRefs } from "pinia";
+import { useTaskStore } from "../../stores/task";
+
+const store = useTaskStore()
+const { handleAddedTask,handleUpdatedTask } = store
+
+const loader = ref(false);
+const errors = ref({});
 
 const props = defineProps({
     taskPopup: Boolean,
-    isEdit:Boolean
+    isEdit:Boolean,
+    formData: Object,
+    loader: Boolean,
+    users: Object,
+    errors:Object
 });
+const { formData } = toRefs(props);
 
-const emit = defineEmits(["open-task-modal","close-task-modal"]);
-
-const openTaskModal = () => {
-  emit("open-task-modal");
-};
+const emit = defineEmits(["close-task-modal"]);
 
 const closeTaskModal = () => {
+  errors.value = '';
   emit("close-task-modal");
 };
 
-const formData = ref({
-  name: "",
-  priority: "high",
-  status: "Pending",
-});
-const loader = ref(false);
-const errors = ref({});
+
+const addNewTask = async() => {
+ try
+  {
+      loader.value = true;  
+      await handleAddedTask(formData.value)
+      emit("close-task-modal");
+      successMessage.value =  'Task added successfully';
+      loader.value = false;
+      formData.value.name = '';   
+      formData.value.priority = '';  
+      formData.value.status = '';  
+      await fetchAllTasks()
+      tasks.value = store.tasks
+  }catch(error){
+    if (error.response && error.response.status === 422) {
+        errors.value = error.response.data.errors;
+      }
+      loader.value = false; 
+  }
+};
+
+// Update Task
+const updateTaskData = async() => {
+   // console.log('Form submitted:', formData.value);
+  try
+  {
+      loader.value = true;  
+      await handleUpdatedTask(formData.value)
+      emit("close-task-modal");
+      successMessage.value =  'Task updated successfully';
+      loader.value = false;
+      formData.value.name = '';   
+      formData.value.priority = '';
+      loader.value = false;
+      const { data } = await allTasks()
+      tasks.value = data.data   
+
+  }catch(error){
+    if (error.response && error.response.status === 422) {
+        errors.value = error.response.data.errors;
+      }
+      loader.value = false; 
+  }
+
+}
+
+
 </script>
   
