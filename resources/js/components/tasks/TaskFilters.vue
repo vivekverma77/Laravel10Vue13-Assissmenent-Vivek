@@ -7,7 +7,7 @@
     </div>
 </template>
 <script setup>
-import { ref,defineProps,toRefs } from "vue";
+import { ref } from "vue";
 const emit = defineEmits(['filter-tasks'])
 const selectedStatus = ref('All'); // To store the selected status
 

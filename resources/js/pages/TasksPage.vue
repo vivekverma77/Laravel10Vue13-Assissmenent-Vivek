@@ -47,10 +47,10 @@
               :filteredTasks="filteredTasks"
               :currentPage="currentPage"
               :totalPages="totalPages"
+              :selectedStatus="selectedStatus"
               :prevPage="prevPage"
               :nextPage="nextPage"
               :gotoPage="gotoPage"
-
               @show-delete-modal="showDeleteModal"
               @task-edit="taskEdit"
             />

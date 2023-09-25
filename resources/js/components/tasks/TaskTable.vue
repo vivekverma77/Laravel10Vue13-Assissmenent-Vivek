@@ -11,7 +11,7 @@
         </tr>
       </thead>
       <tbody>
-        <tr v-for="task in filteredTasks" :key="task.id">
+        <tr v-if="filteredTasks.length" v-for="task in filteredTasks" :key="task.id">
           <td>{{ task.name }}</td>
           <td>
             <span v-if="task.priority == 'low'" class="badge bg-success"
@@ -48,6 +48,7 @@
             </button>
           </td>
         </tr>
+        <tr v-else><td colspan="5" class="text-center"><span class=" alert-info">No {{selectedStatus != 'All' ? selectedStatus.toLowerCase() : '' }} task available</span></td></tr>
       </tbody>
     </table>
     <div class="pagination mt-3 d-block">
@@ -80,6 +81,7 @@ const props = defineProps({
   filteredTasks: Array,
   currentPage: Number,
   totalPages: Number,
+  selectedStatus:String,
   prevPage: Function,
   nextPage: Function,
   gotoPage: Function,
