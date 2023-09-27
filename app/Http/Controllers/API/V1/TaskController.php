@@ -13,12 +13,22 @@ use GuzzleHttp\Psr7\Request;
 
 class TaskController extends Controller
 {
+    function __construct()
+    {
+        $this->authorizeResource(Task::class);
+    }
     /**
      * Display a listing of the resource.
      */
     public function index()
-    {   
-        return TaskResource::collection(Task::with('user')->orderby('id','desc')->get());
+    {
+        $user = auth()->user();
+        return TaskResource::collection(Task::with(['user'])
+            ->where(function ($query) use ($user) {
+                $query->where('user_id', $user->id)
+                    ->orWhere('assigned_user_id', $user->id);
+            })
+            ->orderby('id', 'desc')->get());
     }
 
     /**
@@ -35,7 +45,7 @@ class TaskController extends Controller
      * Display the specified resource.
      */
     public function show(Task $task)
-    {   
+    {
         return TaskResource::make($task);
     }
 
@@ -60,14 +70,14 @@ class TaskController extends Controller
     }
 
     public function tasksByStatus($status)
-    {   
+    {
         return TaskResource::collection(Task::where('status', $status)->get());
     }
 
     public function tasksBySearch()
-    {  
+    {
         $json = file_get_contents('php://input');
-        $search = json_decode($json);   
-        return TaskResource::collection(Task::where('name', 'LIKE',"%$search->search%")->get());
+        $search = json_decode($json);
+        return TaskResource::collection(Task::where('name', 'LIKE', "%$search->search%")->get());
     }
 }

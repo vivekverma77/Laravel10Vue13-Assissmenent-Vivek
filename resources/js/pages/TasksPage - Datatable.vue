@@ -111,8 +111,7 @@ import DataTable from 'datatables.net-vue3';
 import DataTablesCore from 'datatables.net-bs5';
  
 DataTable.use(DataTablesCore);
-let dt;
-const table = ref();
+
 
 const columns = [
   { data: 'ID' },

@@ -53,7 +53,15 @@
               :gotoPage="gotoPage"
               @show-delete-modal="showDeleteModal"
               @task-edit="taskEdit"
+              @task-datatable="tasksDatatable"
             />
+
+            <!-- <TaskDataTable
+            :tableTasks="tableTasks"
+            :tasks="tasks"
+            @show-delete-modal="showDeleteModal"
+            @task-edit="taskEdit"
+           /> -->
 
             <!-- Delete Modal Component -->
             <DeleteModal
@@ -79,6 +87,7 @@ import DeleteModal from "../components/modals/DeleteModal.vue";
 import TaskModal from "../components/modals/TaskModal.vue";
 import TaskFilters from "../components/tasks/TaskFilters.vue";
 import TaskTable from "../components/tasks/TaskTable.vue";
+import TaskDataTable from "../components/tasks/TaskDataTable.vue";
 import { useTaskStore } from "../stores/task";
 const store = useTaskStore();
 const { fetchAllTasks } = store;

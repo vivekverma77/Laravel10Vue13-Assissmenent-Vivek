@@ -99,4 +99,3 @@ const showDeleteModal = (id) => {
   emit('show-delete-modal',id)
 };
 </script>
-  
