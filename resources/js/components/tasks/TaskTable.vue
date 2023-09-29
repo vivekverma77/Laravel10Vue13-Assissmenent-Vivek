@@ -51,7 +51,7 @@
         <tr v-else><td colspan="5" class="text-center"><span class=" alert-info">No {{selectedStatus != 'All' ? selectedStatus.toLowerCase() : '' }} task available</span></td></tr>
       </tbody>
     </table>
-    <div class="pagination mt-3 d-block">
+    <div class="pagination mt-3 d-block" v-if="totalPages">
       <ul class="pagination justify-content-center">
         <li class="page-item" :class="{ disabled: currentPage === 1 }">
           <a class="page-link" href="#" @click.prevent="prevPage">Previous</a>
