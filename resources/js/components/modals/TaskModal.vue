@@ -54,7 +54,7 @@ import { storeToRefs } from "pinia";
 import { useTaskStore } from "../../stores/task";
 
 const store = useTaskStore()
-const { handleAddedTask,handleUpdatedTask } = store
+const { handleAddedTask,handleUpdatedTask,fetchTasksByStatus } = store
 
 const loader = ref(false);
 const errors = ref({});
@@ -85,7 +85,7 @@ const addNewTask = async() => {
       emit("close-task-modal");
       emit("success-message", "Task added successfully");
       loader.value = false;
-      await fetchAllTasks()
+      await fetchTasksByStatus(selectedStatus.value)
       tasks.value = store.tasks
   }catch(error){
     if (error.response && error.response.status === 422) {
@@ -104,9 +104,8 @@ const updateTaskData = async() => {
       await handleUpdatedTask(formData.value)
       emit("close-task-modal");
       emit("success-message", "Task updated successfully");
-      const { data } = await allTasks()
-      tasks.value = data.data   
-
+      await fetchTasksByStatus(selectedStatus.value)
+      tasks.value = store.tasks
   }catch(error){
     if (error.response && error.response.status === 422) {
         errors.value = error.response.data.errors;

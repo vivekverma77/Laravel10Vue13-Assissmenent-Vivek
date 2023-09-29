@@ -75,7 +75,6 @@
 import { computed, onMounted, ref } from "vue";
 import {
   editTask,
-  tasksByStatus,
   tasksBySearch,
 } from "../http/task-api.js";
 import DeleteModal from "../components/modals/DeleteModal.vue";
@@ -84,8 +83,8 @@ import TaskFilters from "../components/tasks/TaskFilters.vue";
 import TaskTable from "../components/tasks/TaskTable.vue";
 import { useTaskStore } from "../stores/task";
 const store = useTaskStore();
-const { fetchAllTasks } = store;
-const { handleRemovedTask } = store;
+const { fetchAllTasks,handleRemovedTask,fetchTasksByStatus } = store;
+
 const tasks = ref([]);
 
 const taskPopup = ref(false);
@@ -131,6 +130,7 @@ const openTaskModal = () => {
 
 const closeTaskModal = () => {
   taskPopup.value = false;
+  isEdit.value = false;
 };
 
 // Edit the task
@@ -160,15 +160,11 @@ const confirmDelete = async () => {
   filterTasks(selectedStatus.value);
 };
 
-
+// Filter task state Pending,Completed etc
 const filterTasks = async (status) => {
   selectedStatus.value = status;
-  if (status === "All") {
-     tasks.value = store.tasks;
-  } else {
-    const { data } = await tasksByStatus(status);
-    tasks.value = data.data;
-  }
+  await fetchTasksByStatus(status);
+  tasks.value = store.tasks;
 };
 
 // Search task
@@ -177,8 +173,8 @@ const searchQuery = ref("");
 const filterTasksBySearch = async () => {
   const query = searchQuery.value.toLowerCase();
   if (query == "") {
-    const { data } = await tasksByStatus(selectedStatus.value);
-    tasks.value = data.data;
+    await fetchTasksByStatus(selectedStatus.value);
+    tasks.value = store.tasks;
   } else {
     const { data } = await tasksBySearch({ search: query,status:selectedStatus.value  });
     tasks.value = data.data;
@@ -186,7 +182,7 @@ const filterTasksBySearch = async () => {
 };
 
 // Pagingnation
-const itemsPerPage = ref(5); // Number of items to display per page
+const itemsPerPage = ref(10); // Number of items to display per page
 const currentPage = ref(1); // Current page number
 
 const filteredTasks = computed(() => {
@@ -217,5 +213,9 @@ const gotoPage = (page) => {
 
 const showSuccessMessage = (message) => {
   successMessage.value = message;
+  setTimeout(() => {
+    successMessage.value = '';
+  }, 3000); // 3000 milliseconds = 3 seconds
 };
+
 </script>

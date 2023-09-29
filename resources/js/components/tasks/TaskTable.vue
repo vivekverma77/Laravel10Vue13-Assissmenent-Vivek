@@ -11,7 +11,11 @@
         </tr>
       </thead>
       <tbody>
-        <tr v-if="filteredTasks.length" v-for="task in filteredTasks" :key="task.id">
+        <tr
+          v-if="filteredTasks.length"
+          v-for="task in filteredTasks"
+          :key="task.id"
+        >
           <td>{{ task.name }}</td>
           <td>
             <span v-if="task.priority == 'low'" class="badge bg-success"
@@ -48,7 +52,17 @@
             </button>
           </td>
         </tr>
-        <tr v-else><td colspan="5" class="text-center"><span class=" alert-info">No {{selectedStatus != 'All' ? selectedStatus.toLowerCase() : '' }} task available</span></td></tr>
+        <tr v-else>
+          <td colspan="5" class="text-center">
+            <span class="alert-info"
+              >No
+              {{
+                selectedStatus != "All" ? selectedStatus.toLowerCase() : ""
+              }}
+              task available</span
+            >
+          </td>
+        </tr>
       </tbody>
     </table>
     <div class="pagination mt-3 d-block" v-if="totalPages">
@@ -75,27 +89,28 @@
 </template>
   
 <script setup>
-import { defineProps,toRefs  } from "vue";
+import { defineProps, toRefs } from "vue";
 
 const props = defineProps({
   filteredTasks: Array,
   currentPage: Number,
   totalPages: Number,
-  selectedStatus:String,
+  selectedStatus: String,
   prevPage: Function,
   nextPage: Function,
   gotoPage: Function,
 });
 
-const {filteredTasks, currentPage, totalPages, prevPage, nextPage, gotoPage } = toRefs(props);
+const { filteredTasks, currentPage, totalPages, prevPage, nextPage, gotoPage } =
+  toRefs(props);
 
-const emit = defineEmits(['show-delete-modal','task-edit'])
+const emit = defineEmits(["show-delete-modal", "task-edit"]);
 
 const taskEdit = (id) => {
-  emit('task-edit',id)
+  emit("task-edit", id);
 };
 
 const showDeleteModal = (id) => {
-  emit('show-delete-modal',id)
+  emit("show-delete-modal", id);
 };
 </script>

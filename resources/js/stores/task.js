@@ -6,17 +6,26 @@ import {
   updateTask,
   completeTask,
   removeTask,
+  tasksByStatus,
 } from "../http/task-api";
 
 export const useTaskStore = defineStore("taskStore", () => {
   const tasks = ref([]);
-
-  const itemsPerPage = ref(5); // Number of items to display per page
-  const currentPage = ref(1); // Current page number
+  const selectedStatus = ref("All"); // To store the selected status
 
   const uncompletedTasks = computed(() =>
     tasks.value.filter((task) => !task.is_completed)
   );
+
+  const fetchTasksByStatus = async (status) => {
+    selectedStatus.value = status;
+    if (status === "All") {
+      fetchAllTasks();
+    } else {
+      const { data } = await tasksByStatus(status);
+      tasks.value = data.data;
+    }
+  };
 
   const fetchAllTasks = async () => {
     const { data } = await allTasks();
@@ -61,10 +70,12 @@ export const useTaskStore = defineStore("taskStore", () => {
   return {
     tasks,
     uncompletedTasks,
+    selectedStatus,
     fetchAllTasks,
     handleAddedTask,
     handleUpdatedTask,
     handleCompletedTask,
     handleRemovedTask,
+    fetchTasksByStatus
   };
 });
