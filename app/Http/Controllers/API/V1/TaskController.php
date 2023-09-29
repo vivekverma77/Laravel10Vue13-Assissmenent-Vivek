@@ -88,6 +88,7 @@ class TaskController extends Controller
         $search = json_decode($json);
         return TaskResource::collection(Task::with(['user'])
             ->where('name', 'LIKE', "%$search->search%")
+            ->where('status', "$search->status")
             ->where(function ($query) use ($user) {
                 $query->where('user_id', $user->id)
                     ->orWhere('assigned_user_id', $user->id);

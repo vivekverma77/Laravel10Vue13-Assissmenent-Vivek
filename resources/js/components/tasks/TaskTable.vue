@@ -87,7 +87,7 @@ const props = defineProps({
   gotoPage: Function,
 });
 
-const { filteredTasks, currentPage, totalPages, prevPage, nextPage, gotoPage } = toRefs(props);
+const {filteredTasks, currentPage, totalPages, prevPage, nextPage, gotoPage } = toRefs(props);
 
 const emit = defineEmits(['show-delete-modal','task-edit'])
 

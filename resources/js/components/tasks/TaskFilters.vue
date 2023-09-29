@@ -7,13 +7,14 @@
     </div>
 </template>
 <script setup>
-import { ref } from "vue";
+import { ref,defineProps } from "vue";
 const emit = defineEmits(['filter-tasks'])
 const selectedStatus = ref('All'); // To store the selected status
-
-
+const props = defineProps({
+    selectedStatus:String
+});
 const filterTasks = ($parm) => {
-    selectedStatus.value = status;
+    selectedStatus.value = $parm;
     emit("filter-tasks",$parm);
 }
 </script>

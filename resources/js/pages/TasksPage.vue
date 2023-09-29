@@ -28,7 +28,10 @@
             />
 
             <!-- ... Task Filter ... -->
-            <TaskFilters @filter-tasks="filterTasks" />
+            <TaskFilters 
+            :selectedStatus="selectedStatus"
+            @filter-tasks="filterTasks" 
+            />
             <!-- Search input field -->
             <div class="mb-3 mt-3">
               <label for="search" class="form-label">Search:</label>
@@ -53,7 +56,6 @@
               :gotoPage="gotoPage"
               @show-delete-modal="showDeleteModal"
               @task-edit="taskEdit"
-              @task-datatable="tasksDatatable"
             />
 
             <!-- Delete Modal Component -->
@@ -102,6 +104,8 @@ import { useUserStore } from "../stores/user";
 const userStore = useUserStore();
 const { fetchAllUsers } = userStore;
 const users = ref([]);
+// Filter tasks
+const selectedStatus = ref("All"); // To store the selected status
 
 // Get all tasks
 onMounted(async () => {
@@ -152,12 +156,11 @@ const hideDeleteModal = () => {
 const confirmDelete = async () => {
   await handleRemovedTask(deleteTaskId.value);
   deletePopup.value = false;
-  tasks.value = store.tasks;
-  successMessage.value = "Task Deleted Successfully"
+  successMessage.value = "Task Deleted Successfully";
+  filterTasks(selectedStatus.value);
 };
 
-// Filter tasks
-const selectedStatus = ref("All"); // To store the selected status
+
 const filterTasks = async (status) => {
   selectedStatus.value = status;
   if (status === "All") {
@@ -170,15 +173,14 @@ const filterTasks = async (status) => {
 
 // Search task
 const searchQuery = ref("");
-
 // Filter tasks by search query
 const filterTasksBySearch = async () => {
   const query = searchQuery.value.toLowerCase();
   if (query == "") {
-    await fetchAllTasks();
-    tasks.value = store.tasks;
+    const { data } = await tasksByStatus(selectedStatus.value);
+    tasks.value = data.data;
   } else {
-    const { data } = await tasksBySearch({ search: query });
+    const { data } = await tasksBySearch({ search: query,status:selectedStatus.value  });
     tasks.value = data.data;
   }
 };
