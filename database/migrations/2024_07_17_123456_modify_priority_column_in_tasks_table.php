@@ -14,7 +14,7 @@ class ModifyPriorityColumnInTasksTable extends Migration
     public function up()
     {
         Schema::table('tasks', function (Blueprint $table) {
-            $table->integer('priority')->nullable()->default(null)->change();
+            $table->string('priority')->nullable()->default(null)->change();
         });
     }
 
@@ -26,7 +26,7 @@ class ModifyPriorityColumnInTasksTable extends Migration
     public function down()
     {
         Schema::table('tasks', function (Blueprint $table) {
-            $table->integer('priority')->nullable(false)->default(0)->change();
+            $table->string('priority')->nullable(false)->default(0)->change();
         });
     }
 }
