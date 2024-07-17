@@ -19,9 +19,11 @@ class TaskResource extends JsonResource
             'name' => $this->name,
             'priority' => $this->priority,
             'status' => $this->status,
-            'assigned_user_name' => $this->user ? $this->user->name : null,
+            'user_id' => $this->user_id,
             'assigned_user_id' => $this->assigned_user_id,
-            
+            'is_completed' => $this->is_completed,
+            'created_at' => $this->created_at,
+            'updated_at' => $this->updated_at,
         ];
     }
 }
