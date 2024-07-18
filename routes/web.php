@@ -18,9 +18,9 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::prefix('auth')->group(function () {
-    Route::post('/login', LoginController::class)->middleware('guest');
-    Route::post('/logout', LogoutController::class)->middleware('auth');
-    Route::post('/register', RegisterController::class)->middleware('guest');
+    Route::post('/login', LoginController::class)->middleware('guest')->name('login');
+    Route::post('/logout', LogoutController::class)->middleware('auth')->name('logout');
+    Route::post('/register', RegisterController::class)->middleware('guest')->name('register');
 });
 
 Route::prefix('auth')->middleware('guest')->group(function () {
